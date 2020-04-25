@@ -3,6 +3,23 @@ from typing import List, Tuple
 import uuid
 
 
+def attempt(func):
+    """
+    Error handles any function
+    Function must not return something normally
+    """
+    def inner(*args, **kwargs) -> str:
+        try:
+            func(*args, **kwargs)
+            return "Success"
+        except Exception as e:
+            # function failed
+            return e.args[0]
+
+    return inner
+
+
+
 class HatGame:
     """
     The hat game 
@@ -54,14 +71,26 @@ class HatGame:
     def display_main_hat(self):
         print(self.__hat)
     
+
     def get_user_info(self):
         return self.__user_info
+    
+
+    def all_users(self) -> List[Tuple[str, str]]:
+        """
+        INFORMATION FUNCTION
+        Get all usernames present and whether they are ready to proceed from the lobby
+        @returns -> list of tuples in format [(username, 0 or 1), ..]
+        """
+        userReady = [(username, self.__user_info[username]['lobby_ready']) for username in self.__user_info.keys()]
+        return userReady
     
     
     """
     lobby state
     """
 
+    @attempt
     def add_user(self, username: str) -> None:
         """
         [state required: lobby] 
@@ -91,7 +120,7 @@ class HatGame:
             }
 
     
-    
+    @attempt
     def set_user_ready(self, username: str) -> None:
         """
         [state required: lobby] 
@@ -108,16 +137,8 @@ class HatGame:
         # set the user to ready
         self.__user_info[username]['lobby_ready'] = 1
 
-
-    def all_users(self) -> List[Tuple[str, str]]:
-        """
-        Get all usernames present and whether they are ready to proceed from the lobby
-        @returns -> list of tuples in format [(username, 0 or 1), ..]
-        """
-        userReady = [(username, self.__user_info[username]['lobby_ready']) for username in self.__user_info.keys()]
-        return userReady
-
     
+    @attempt
     def change_state_to_input(self) -> None:
         """
         [state required: lobby] 
@@ -142,6 +163,7 @@ class HatGame:
     input state
     """
 
+    @attempt
     def put(self, username: str, item: str) -> None:
         """
         [state required: input] 
@@ -166,6 +188,7 @@ class HatGame:
             raise Exception("Too many items added")
 
     
+    @attempt
     def users_input_ready(self):
         """
         [state required: input]

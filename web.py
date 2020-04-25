@@ -1,25 +1,29 @@
 import random
 from hatgame import HatGame
-from flask import Flask, Response, render_template, request, redirect, abort, url_for
+from flask import Flask, Response, render_template, request, redirect, abort, url_for, session
 
 
 # start flask app
 app = Flask(__name__)
 
 
-hatgame = HatGame()
+# we store hatgame instances here
+hatgamehat = {}
 
 
 @app.route('/')
 def index():
     """
     Main page
-    
-    Ask their name and they join a lobby
+
+    Join a lobby
+    or
+    Create a lobby
 
     """
 
     username = request.args.get('username')
+    lobby_id = request.args.get('lobby_id')
 
     if username == None:
         # before we have the username
@@ -28,16 +32,27 @@ def index():
             'index.html'
         )
     
-    
+    if lobby_id == None:
+        # then create a new game
+        hatgame = HatGame()
+        hatgamehat[hatgame.id] = hatgame # put hatgame in the game hat
+        hatgame.add_user(username) # add to the hat
+        session['username'] = username # add to the session
+        # redirect to /<lobby_id>
+        return redirect(
+            url_for(
+                hatgame.id
+            )
+        )
+
     else:
-        # Now we have a username input
-        
-        # add the username to our game
-        # if its a valid username display the lobby
+        # join the new game if it exists
+        # redirect to /<lobby_id>
+        hatgame = hatgamehat.get(lobby_id, None)
+        # TODO: handle game not existing
+
         hatgame.add_user(username)
 
-        # else display index with an error
-        
         return redirect(
             url_for(
                 'lobby',
@@ -46,11 +61,30 @@ def index():
         )
 
 
-@app.route('/lobby')
-def lobby():
+@app.route('/<game_id>')
+def game(game_id):
+    """
+    Display the game depending on the game_id and state of that game
+    """
+    hatgame = hatgamehat.get(game_id, None)
+
+    # depending on the game state we display different content here?
+    state = hatgame.get_state()
+
+    # functions which map to the states
+    states = {
+        'lobby': lobby,
+        'input': input_stage
+    }
+
+    # return the state function output
+    return states[state](hatgame)
+
+
+def lobby(hatgame):
     """
     Lobby page
-    Display people in lobby and have ready up button    
+    Display people and wait for everyone to join
     """
 
     username = request.args.get('user')
@@ -86,10 +120,9 @@ def lobby():
         )
 
 
-@app.route('/input')
-def input_func():
+def input_stage(hatgame):
     """
-    GET /input?hello=1
+    user enters names to be put in the hat
     """
  
     input_name = request.args.get('input_name')
@@ -114,6 +147,18 @@ def input_func():
             user = user,
             message = message
         )
+
+
+@app.route('/refresh', methods=['POST'])
+def refresh():
+    """
+    check if the game state has changed
+    This needs to be pretty fast if run often as every client will load this each interval
+    (but that should be faster than reloading the entire page?)
+    """
+    room_id = request.json.get('id')
+
+    pass
 
 
 if __name__ == '__main__':
