@@ -6,6 +6,9 @@ from flask import Flask, Response, render_template, request, redirect, abort, ur
 # start flask app
 app = Flask(__name__)
 
+# This needs to be set properly in production
+app.secret_key = b'not a secret'
+
 
 # we store hatgame instances here
 hatgamehat = {}
@@ -23,7 +26,8 @@ def index():
     """
 
     username = request.args.get('username')
-    lobby_id = request.args.get('lobby_id')
+    room_id = request.args.get('room_id')
+    session['username'] = username
 
     if username == None:
         # before we have the username
@@ -32,41 +36,60 @@ def index():
             'index.html'
         )
     
-    if lobby_id == None:
+    if room_id == None:
         # then create a new game
         hatgame = HatGame()
         hatgamehat[hatgame.id] = hatgame # put hatgame in the game hat
         hatgame.add_user(username) # add to the hat
-        session['username'] = username # add to the session
-        # redirect to /<lobby_id>
+        # redirect to /<room_id>
         return redirect(
             url_for(
-                hatgame.id
+                'game',
+                game_id=hatgame.id
             )
         )
 
-    else:
-        # join the new game if it exists
-        # redirect to /<lobby_id>
-        hatgame = hatgamehat.get(lobby_id, None)
-        # TODO: handle game not existing
+    # join the new game if it exists
+    hatgame = hatgamehat.get(room_id, None)
 
-        hatgame.add_user(username)
-
-        return redirect(
-            url_for(
-                'lobby',
-                user=username
-            )
+    # handle game not existing
+    if hatgame == None:
+        # return the index page with an error message
+        return render_template(
+            'index.html',
+            error = "That game doesn't exist"
         )
 
+    if hatgame.add_user(username) != "Success":
+        # return the index pagge with an error message
+        return render_template(
+            'index.html',
+            error = "Enter a username!"
+        )
 
-@app.route('/<game_id>')
+    # redirect to /game/<room_id>
+    return redirect(
+        url_for(
+            'game',
+            game_id=hatgame.id
+        )
+    )
+
+
+@app.route('/game/<game_id>')
 def game(game_id):
     """
     Display the game depending on the game_id and state of that game
     """
     hatgame = hatgamehat.get(game_id, None)
+
+    # handle game not existing
+    if hatgame == None:
+        # return the index page with an error message
+        return render_template(
+            'index.html',
+            error = "This game doesn't exist"
+        )
 
     # depending on the game state we display different content here?
     state = hatgame.get_state()
@@ -74,7 +97,11 @@ def game(game_id):
     # functions which map to the states
     states = {
         'lobby': lobby,
-        'input': input_stage
+        'input': input_stage,
+        'round1': round1,
+        'round2': round2,
+        'round3': round3,
+        'end': end
     }
 
     # return the state function output
@@ -87,37 +114,24 @@ def lobby(hatgame):
     Display people and wait for everyone to join
     """
 
-    username = request.args.get('user')
+    username = session['username']
     ready = request.args.get('readyCheck')
 
-    # check if ready parameter exists
-    if ready == 1:
-        # update that users status
-        hatgame.set_user_ready(username)
-
-
-    user = f"Welcome {username}"
+    if ready == "1":
+        message = hatgame.set_user_ready(username) # update that users status
 
     all_users = hatgame.all_users()
-
-    print(ready)
     
-    # check if everyone is ready
-    # if hatgame.ready():
-    #     # redirect to input
-    #     pass
-    if False:
-        pass
-
-    else:
-        # display lobby with users
-
-        return render_template(
-            'lobby.html',
-            user = user,
-            all_users = all_users,
-            ready = ''
-        )
+    message = hatgame.change_state_to_input()
+    
+    # display lobby with users
+    return render_template(
+        'lobby.html',
+        username = session['username'],
+        all_users = all_users,
+        room_id = hatgame.id,
+        ready = ''
+    )
 
 
 def input_stage(hatgame):
@@ -126,27 +140,41 @@ def input_stage(hatgame):
     """
  
     input_name = request.args.get('input_name')
-    username = request.args.get('username')
-    user = f"{username}"
+    username = session['username']
+
+    message = hatgame.users_input_ready()
+    print(message)
 
     if input_name == None:
         # diplay the page
         return render_template(
             'input.html', 
-            user = user 
+            user = username 
         )
     
     else:
-        hatgame.put(input_name)
-        message = f"{input_name} has been submitted!"
-        
-        print(message)
+        message = hatgame.put(username,input_name)
 
         return render_template(
             'input.html',
-            user = user,
+            user = username,
             message = message
         )
+
+
+def round1(hatgame):
+    return render_template(
+        'round.html'
+    )
+
+def round2():
+    pass
+
+def round3():
+    pass
+
+def end():
+    pass
 
 
 @app.route('/refresh', methods=['POST'])

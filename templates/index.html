@@ -1,20 +1,109 @@
 <html>
+    <style>
+        html{
+            margin: auto;
+            max-width: 1000px;
+        }
 
-    <form action="/" method="get">
-        
-        <div class="form">
-            <div>
-                <label class="Username">
-                    <input type="text" name="username">
-                </label>
-            </div>
+        body{
+            text-align: center;
+        }
+
+        h1.main_title{
+            font-size: 3em;
+        }
+
+        div.create{
+            background-color: aquamarine;
+            border-radius: 2em;
+            padding: 1em;
+            margin: 1em;
+        }
+
+        div.join{
+            background-color:crimson;
+            border-radius: 2em;
+            padding: 1em;
+            margin: 1em;
+        }
+
+        div.instructions{
+            background-color:gainsboro;
+            border-radius: 2em;
+            padding: 1em;
+            margin: 1em;
+        }
+    </style>
+
+    <head>
+
+    </head>
+
+    <body>
+        <h1 class="main_title">
+            The Hat Game 🎩
+        </h1>
+
+
+        <div class="create">
+            <h2>
+                Create a game
+            </h2>
+
+            <form action="/" method="get">
+                
+                <div class="form">
+                    <label class="Username">
+                        Username
+                        <input type="text" name="username" autocomplete="off">
+                    </label>
+                </div>
+
+                <input type="submit" value="Play game!">
+            
+            </form>
         </div>
 
-        <input type="submit" value="Play game!">
-    
-    </form>
+        <div class="join">
+            <h2>
+                Join a game
+            </h2>
 
-    <div>
-        {{ message }}
-    </div>
+            <form action="/" method="get">
+                
+                <div>
+                    <label class="username">
+                        Username
+                        <input type="text" name="username" autocomplete="off">
+                    </label>
+                </div>
+                
+                <div>
+                    <label class="room_id">
+                        Room id
+                        <input type="text" name="room_id" autocomplete="off">
+                    </label>
+                </div>
+
+                <input type="submit" value="Play game!">
+            
+            </form>
+
+            <p>
+                {{ error }}
+            </p>
+        </div>
+
+        <div class="instructions">
+            <h3>
+                How it works
+            </h3>
+
+            <p>
+                So normally each person writes 5 characters / people on a strip of paper, folds it up then everyone puts them in a hat. You then take turns to take a name from the hat. Round 1 you can use any words to describe the character but the word itself. If someone guesses it then they keep the paper to keep track of points. Put all the paper back in the hat at the end of the round. Round 2 same again you pass the hat round but you’re only allowed to say one word. Round 3 you’re only allowed to act out the character!
+            </p>
+        </div>
+
+    </body>
+
 </html>
