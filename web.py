@@ -1,6 +1,6 @@
 import random
 from hatgame import HatGame
-from flask import Flask, Response, render_template, request, redirect, abort, url_for, session
+from flask import Flask, Response, render_template, request, redirect, abort, url_for, session, jsonify
 
 
 # start flask app
@@ -41,6 +41,7 @@ def index():
         hatgame = HatGame()
         hatgamehat[hatgame.id] = hatgame # put hatgame in the game hat
         hatgame.add_user(username) # add to the hat
+        session['id'] = hatgame.id
         # redirect to /<room_id>
         return redirect(
             url_for(
@@ -66,6 +67,8 @@ def index():
             'index.html',
             error = "Enter a username!"
         )
+
+    session['id'] = hatgame.id
 
     # redirect to /game/<room_id>
     return redirect(
@@ -117,7 +120,7 @@ def lobby(hatgame):
     username = session['username']
     ready = request.args.get('readyCheck')
 
-    if ready == "1":
+    if ready == "✔":
         message = hatgame.set_user_ready(username) # update that users status
 
     all_users = hatgame.all_users()
@@ -142,14 +145,14 @@ def input_stage(hatgame):
     input_name = request.args.get('input_name')
     username = session['username']
 
-    message = hatgame.users_input_ready()
-    print(message)
+    ready = hatgame.users_input_ready()
 
     if input_name == None:
         # diplay the page
         return render_template(
             'input.html', 
-            user = username 
+            user = username,
+            ready = ready
         )
     
     else:
@@ -158,7 +161,8 @@ def input_stage(hatgame):
         return render_template(
             'input.html',
             user = username,
-            message = message
+            message = message,
+            ready = ready
         )
 
 
@@ -177,16 +181,24 @@ def end():
     pass
 
 
-@app.route('/refresh', methods=['POST'])
+@app.route('/refresh')
 def refresh():
     """
     check if the game state has changed
     This needs to be pretty fast if run often as every client will load this each interval
     (but that should be faster than reloading the entire page?)
     """
-    room_id = request.json.get('id')
+    game_id = session['id']
 
-    pass
+    hatgame = hatgamehat[game_id]
+
+    change = hatgame.has_changed()
+
+    if change == 1:
+        hatgame.reset_change()
+        return "1"
+    else:
+        return "0"
 
 
 if __name__ == '__main__':

@@ -1,23 +1,6 @@
 import random
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Callable
 import uuid
-
-
-def attempt(func):
-    """
-    Error handles any function
-    Function must not return something normally
-    """
-    def inner(*args, **kwargs) -> str:
-        try:
-            func(*args, **kwargs)
-            return "Success"
-        except Exception as e:
-            # function failed
-            return e.args[0]
-
-    return inner
-
 
 
 class HatGame:
@@ -59,6 +42,26 @@ class HatGame:
 
         self.__state = "lobby"
 
+        self.__change = 0 # updated to 1 everytime a function runs
+
+
+    # TODO: we get errors here even though it's valid code
+    def attempt(func: Callable): 
+        """
+        Error handles any function
+        Function must not return something normally
+        """
+        def inner(self, *args, **kwargs) -> str:
+            try:
+                func(self, *args, **kwargs)
+                self.set_change()
+                print(self.__change)
+                return "Success"
+            except Exception as e:
+                # function failed
+                return e.args[0]
+        return inner
+
 
     def get_state(self) -> str:
         """
@@ -85,6 +88,18 @@ class HatGame:
         userReady = {username: self.__user_info[username]['lobby_ready'] for username in self.__user_info.keys()}
         return userReady
     
+
+    def has_changed(self):
+        return self.__change
+    
+    
+    def reset_change(self):
+        self.__change = 0
+
+    
+    def set_change(self):
+        self.__change = 1
+
     
     """
     lobby state
@@ -115,8 +130,7 @@ class HatGame:
                 'submitted': [],
                 'won': [],
                 'points?': 0,
-                'lobby_ready': 0,
-                'all_names_submitted': 0,
+                'lobby_ready': "❌",
             }
 
     
@@ -135,7 +149,7 @@ class HatGame:
             raise Exception("User doesn't exist")
 
         # set the user to ready
-        self.__user_info[username]['lobby_ready'] = 1
+        self.__user_info[username]['lobby_ready'] = "✔"
 
     
     @attempt
@@ -151,7 +165,7 @@ class HatGame:
         # get a list of user states in [0,1,0,0, ...]
         ready_states = [self.__user_info[username]['lobby_ready'] for username in self.__user_info.keys()]
         # [1] * number of players
-        expected = [1]*len(self.__user_info.keys())
+        expected = ["✔"]*len(self.__user_info.keys())
 
         if ready_states == expected:
             self.__state = "input"
