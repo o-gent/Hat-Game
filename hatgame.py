@@ -53,10 +53,14 @@ class HatGame:
         """
         def inner(self, *args, **kwargs) -> str:
             try:
-                func(self, *args, **kwargs)
-                self.set_change()
-                print(self.__change)
-                return "Success"
+                result = func(self, *args, **kwargs)
+                if result == None:
+                    self.set_change()
+                    return "Success"
+                else:
+                    self.set_change()
+                    return result
+
             except Exception as e:
                 # function failed
                 return e.args[0]
@@ -69,10 +73,6 @@ class HatGame:
         @returns -> state: can be one of [lobby, input, round1, round1_results, ... , finished]
         """
         return self.__state
-    
-
-    def display_main_hat(self):
-        print(self.__hat)
     
 
     def get_user_info(self):
@@ -89,16 +89,38 @@ class HatGame:
         return userReady
     
 
-    def has_changed(self):
-        return self.__change
+    def user_finished(self, username: str) -> bool:
+        """
+        INFORMATION FUNCTION
+        if the user has submitted all thier names, return true, else false
+        """
+        if len(self.__user_info[username]['submitted']) == self.__name_limit:
+            return True
+        else:
+            return False
+    
+
+    def user_input_left(self, username: str) -> int:
+        """
+        """
+        return self.__name_limit - len(self.__user_info[username]['submitted'])
+    
+    """
+    Change management 
+    """
+    
+    def has_changed(self, username):
+        return self.__user_info[username]['change']
     
     
-    def reset_change(self):
-        self.__change = 0
+    def reset_change(self, username):
+        self.__user_info[username]['change'] = 0
 
     
     def set_change(self):
-        self.__change = 1
+        # need to go through all users and set change
+        for username in self.__user_info.keys():
+            self.__user_info[username]['change'] = 1
 
     
     """
@@ -131,6 +153,8 @@ class HatGame:
                 'won': [],
                 'points?': 0,
                 'lobby_ready': "❌",
+                'change': 0,
+                'chosen': []
             }
 
     
@@ -204,7 +228,7 @@ class HatGame:
 
     
     @attempt
-    def users_input_ready(self):
+    def users_input_ready(self) -> None:
         """
         [state required: input]
         Check if all users are ready, if they are move items to permanent hat and change the state
@@ -218,11 +242,10 @@ class HatGame:
 
         # check if everyone has the expected number
         if ready_states == expected:
-            self.__state = "round1"
+            self.__state = "1"
             # move all items from temp hat to permanent
             self.__permanent_hat = (item for item in self.__hat)
-            # empty hat
-            self.__hat = []
+            self.__users_to_go = list(self.__user_info.keys())
         else:
             raise Exception("Not everyone is ready!")
 
@@ -231,13 +254,78 @@ class HatGame:
     Round state
     """
 
+    @attempt
     def pick(self):
         """
+        [state required: round number]
+        pick a user then 
         choose a random entry from the main_hat list then add it to the used_hat list
         """
-        # pick an entry
+        # enure we are in a round state
+        if self.get_state() in ['1', '2', '3']:
+            state = self.get_state()
+        self.__check_state(state)
+
+
+        # if been through users, refresh list
+        if len(self.__users_to_go) == 0:
+            self.__users_to_go = list(self.__user_info.keys())
+
+        # pick user
+        user = self.__users_to_go.pop(random.randint(0,len(self.__hat)))
+
+        # give them a random item
+        item = self.__hat.pop(random.randint(0,len(self.__hat)))
+
+        return user, item
+
+
+    @attempt
+    def choose(self, username, picked_username):
+        """
+        [state required: round number]
+        """
+        # enure we are in a round state
+        if self.get_state() in ['1', '2', '3']:
+            state = self.get_state()
+        self.__check_state(state)
+        
+        # add picked_username to username chosen
+
+        # add item to picked_username won
 
         pass
+
+
+    @attempt
+    def change_round(self):
+        """
+        [state required: round number]
+        if all users have gone
+        1 -> 2 -> 3 -> end
+        """
+        # enure we are in a round state
+        if self.get_state() in ['1', '2', '3']:
+            state = self.get_state()
+        self.__check_state(state)
+
+        # if the hat is empty, change state
+        if len(self.__hat) == 0:
+            state = self.get_state()
+            if state == "1":
+                self.end_round()
+                self.__state = "2"
+            elif state == "2":
+                self.end_round()
+                self.__state = "3"
+            elif state == "3":
+                self.end_round()
+                self.__state = "end"
+            else:
+                pass
+        else:
+            raise Exception("Round hasn't ended yet")
+
 
 
     """
@@ -248,6 +336,8 @@ class HatGame:
         """
         move used hat to main hat after main hat is empty
         """
+        # copy permanent hat to hat
+        # make user list again
         pass
 
     

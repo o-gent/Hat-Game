@@ -8,13 +8,13 @@ function runMe()
     URL = "/refresh";
 
     const xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() { 
+    xhr.onload = function() { 
         // if 1, reload page
         if (xhr.responseText == "1")
         {
             location.reload()
         }
     }
-    xhr.open('GET', URL);
+    xhr.open('GET', URL, true);
     xhr.send( null );
 }

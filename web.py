@@ -101,9 +101,9 @@ def game(game_id):
     states = {
         'lobby': lobby,
         'input': input_stage,
-        'round1': round1,
-        'round2': round2,
-        'round3': round3,
+        '1': round_,
+        '2': round_,
+        '3': round_,
         'end': end
     }
 
@@ -162,20 +162,29 @@ def input_stage(hatgame):
             'input.html',
             user = username,
             message = message,
-            ready = ready
+            ready = ready,
+            user_finished = hatgame.user_finished(username),
+            items_left = hatgame.user_input_left(username)
         )
 
 
-def round1(hatgame):
+def round_(hatgame):
+    # round number
+    # round instruction
+    # user turn -> who is playing
+    # if user turn
+    #   item picked
+    #   round instruction
+    #   list of users
+
+    chosen_name = request.args.get('chosen_name')
+    username = session['username']
+
+    # we need a way of checking who's turn it is
+
     return render_template(
         'round.html'
     )
-
-def round2():
-    pass
-
-def round3():
-    pass
 
 def end():
     pass
@@ -188,14 +197,15 @@ def refresh():
     This needs to be pretty fast if run often as every client will load this each interval
     (but that should be faster than reloading the entire page?)
     """
-    game_id = session['id']
+    game_id = session.get('id', None)
+    username = session.get('username', None)
 
     hatgame = hatgamehat[game_id]
 
-    change = hatgame.has_changed()
+    change = hatgame.has_changed(username)
 
     if change == 1:
-        hatgame.reset_change()
+        hatgame.reset_change(username)
         return "1"
     else:
         return "0"

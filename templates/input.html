@@ -1,4 +1,8 @@
 <html>
+    {% if user_finished %}
+        <script src="/static/reload.js"></script>
+    {% endif %}
+
     <style>
         html{
             margin: auto;
@@ -21,7 +25,9 @@
             </a>
         </h1>
 
-        {{ user }}
+        <h2>
+            {{ user }} you can put {{ items_left }} more items into the hat!
+        </h2>
         
         <form method="get">
             
@@ -44,6 +50,6 @@
         <p>
             {{ ready }}
         </p>
-        
+
     </body>
 </html>

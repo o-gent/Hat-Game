@@ -1,1 +1,50 @@
-Round
+<html>
+    <script src="/static/reload.js"></script>
+    <style>
+        html{
+            margin: auto;
+            max-width: 1000px;
+        }
+        
+        body{
+            text-align: center;
+        }
+
+        table{
+            margin: 0px auto;
+            padding: 2em;
+        }
+    </style>
+
+    <head>
+
+    </head>
+
+    <body>
+        <h1 class="home" style="font-size: 3em;">
+            <a 
+                href="/" 
+                style="text-decoration: none;" 
+                onclick="return confirm('Are you sure you want to go to home?')"
+            >
+                🎩
+            </a>
+        </h1>
+
+        <h2>
+            Round {{ round_number }}
+        </h2>
+
+        <h3>
+            {{ username }}
+        </h3>
+
+        {% if user_turn == username %}
+            <!-- display the item -->
+            <!-- display a list of users to pick from -->
+        {% else %}
+            <!-- show who's go it is -->
+        {% endif %}
+
+    </body>
+</html>
