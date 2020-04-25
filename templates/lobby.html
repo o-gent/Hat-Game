@@ -1,52 +1,84 @@
 <html>
+    <script src="/static/reload.js"></script>
+    <style>
+        html{
+            margin: auto;
+            max-width: 1000px;
+        }
+        
+        body{
+            text-align: center;
+        }
 
-<h1>
-    {{ username }} you are waiting for everyone to ready up!
-</h1>
+        table{
+            margin: 0px auto;
+            padding: 2em;
+        }
+    </style>
 
-<h2>
-    Your game code is {{ room_id }}
-</h2>
+    <head>
 
-<table>
-    <thead>
-      <tr>
-        <th>Username</th>
-        <th>Ready</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for user in all_users.keys() %}
-        <tr>
-            <td>
-                {{ user }}
-            </td>
-            <td>
-                {{ all_users[user] }}
-            </td>
-        </tr>
+    </head>
 
-    {% endfor %}
-    </tbody>
-  </table>
+    <body>
+        <h1 class="home" style="font-size: 3em;">
+            <a 
+                href="/" 
+                style="text-decoration: none;" 
+                onclick="return confirm('Are you sure you want to go to home?')"
+            >
+                🎩
+            </a>
+        </h1>
+
+        <h1>
+            {{ username }} you are waiting for everyone to ready up!
+        </h1>
+
+        <h2>
+            Your game code is {{ room_id }}
+        </h2>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Ready</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for user in all_users.keys() %}
+                <tr>
+                    <td>
+                        {{ user }}
+                    </td>
+                    <td>
+                        {{ all_users[user] }}
+                    </td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
 
 
-    {% if all_users[username] != 1  %}
-        <form method="get">
-            <input type="hidden" name="readyCheck" value="1">
-            <button>Ready</button>
-        </form>
-    {% else %}
-    <p>
-        ✔
-    </p>
-    {% endif %}
+            {% if all_users[username] != 1  %}
+                <form method="get">
+                    <input type="hidden" name="readyCheck" value="✔">
+                    <button>Ready</button>
+                </form>
+            {% else %}
+            <p>
+                ✔
+            </p>
+            {% endif %}
 
- <!-- {% if all_users|length > 1 %} -->
+        <!-- {% if all_users|length > 1 %} -->
 
- <!-- {% else %}
+        <!-- {% else %}
 
-{% endif %} -->
+        {% endif %} -->
 
+    </body>
 
 </html>

@@ -1,21 +1,49 @@
 <html>
-
-    {{ user }}
-    
-    <form method="get">
+    <style>
+        html{
+            margin: auto;
+            max-width: 1000px;
+        }
         
-        <div class="form">
-            <div>
-                <label class="country">
-                    <input type="text" name="input_name" autocomplete="off">
-                </label>
+        body{
+            text-align: center;
+        }
+    </style>
+
+    <body>
+        <h1 class="home" style="font-size: 3em;">
+            <a 
+                href="/" 
+                style="text-decoration: none;" 
+                onclick="return confirm('Are you sure you want to go to home?')"
+            >
+                🎩
+            </a>
+        </h1>
+
+        {{ user }}
+        
+        <form method="get">
+            
+            <div class="form">
+                <div>
+                    <label class="country">
+                        <input type="text" name="input_name" autocomplete="off">
+                    </label>
+                </div>
             </div>
-        </div>
 
-        <input type="submit" value="Submit">
-    
-    </form>
-    
-    {{ message }}
+            <input type="submit" value="Submit">
+        
+        </form>
+        
+        <p>
+            {{ message }}
+        </p>
 
+        <p>
+            {{ ready }}
+        </p>
+        
+    </body>
 </html>
