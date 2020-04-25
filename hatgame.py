@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 import uuid
 
 
@@ -37,7 +37,7 @@ class HatGame:
     
     """
 
-    def __init__(self, name_limit=5, number_of_players=10):
+    def __init__(self, number_of_players=10):
         """
         @params -> None
         @returns -> HatGame object
@@ -47,7 +47,7 @@ class HatGame:
         self.id = str(uuid.uuid4()) # id of party        
 
         """ private """
-        self.__name_limit = name_limit # number of names a user can enter
+        self.__name_limit = int(25/number_of_players) # number of names a user can enter
 
         self.__user_limit = number_of_players # maximum number of players allowed
 
@@ -76,13 +76,13 @@ class HatGame:
         return self.__user_info
     
 
-    def all_users(self) -> List[Tuple[str, str]]:
+    def all_users(self) -> Dict[str, str]:
         """
         INFORMATION FUNCTION
         Get all usernames present and whether they are ready to proceed from the lobby
         @returns -> list of tuples in format [(username, 0 or 1), ..]
         """
-        userReady = [(username, self.__user_info[username]['lobby_ready']) for username in self.__user_info.keys()]
+        userReady = {username: self.__user_info[username]['lobby_ready'] for username in self.__user_info.keys()}
         return userReady
     
     
@@ -155,6 +155,9 @@ class HatGame:
 
         if ready_states == expected:
             self.__state = "input"
+            self.__name_limit = int(25/len(expected)) # number of names a user can enter
+            if self.__name_limit > 6:
+                self.__name_limit = 6
         else:
             raise Exception("Not everyone is ready!")
 
@@ -177,14 +180,12 @@ class HatGame:
         else:
             pass
 
-        if len(self.__user_info[username]['submitted']) < self.__name_limit + 1:
+        if len(self.__user_info[username]['submitted']) < self.__name_limit:
             # add item to user list
             self.__user_info[username]['submitted'].append(item)
             # add item to hat
             self.__hat.append(item)
         else:
-            # the user has entered all their slots
-            print(item)
             raise Exception("Too many items added")
 
     
@@ -305,7 +306,11 @@ if __name__ == "__main__":
         print(f"{item}, {player}")
         hatgame.put(player, player + item)
     
+    # change to round 1
     hatgame.users_input_ready()
+
+
+    
 
     print(hatgame.get_state())
 

@@ -1,8 +1,12 @@
 <html>
-    {{ user }}
+
 <h1>
-    You are waiting for everyone to ready up!
+    {{ username }} you are waiting for everyone to ready up!
 </h1>
+
+<h2>
+    Your game code is {{ room_id }}
+</h2>
 
 <table>
     <thead>
@@ -12,13 +16,13 @@
       </tr>
     </thead>
     <tbody>
-        {% for user, ready in all_users %}
+        {% for user in all_users.keys() %}
         <tr>
             <td>
                 {{ user }}
             </td>
             <td>
-                {{ ready }}
+                {{ all_users[user] }}
             </td>
         </tr>
 
@@ -27,9 +31,22 @@
   </table>
 
 
-<form action="/lobby" method="get">
-    <input type="checkbox" name="readyCheck" value="1">
-    <input type="submit" value="Ready">
-</form>
+    {% if all_users[username] != 1  %}
+        <form method="get">
+            <input type="hidden" name="readyCheck" value="1">
+            <button>Ready</button>
+        </form>
+    {% else %}
+    <p>
+        ✔
+    </p>
+    {% endif %}
+
+ <!-- {% if all_users|length > 1 %} -->
+
+ <!-- {% else %}
+
+{% endif %} -->
+
 
 </html>
