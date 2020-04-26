@@ -2,13 +2,43 @@ import random
 from hatgame import HatGame
 from flask import Flask, Response, render_template, request, redirect, abort, url_for, session, jsonify
 from typing import Dict
-
+import logging
+from flask.logging import default_handler
 
 # start flask app
 app = Flask(__name__)
 
+# web domain
+#app.config['SERVER_NAME'] = "127.0.0.1:5000"
+
 # This needs to be set properly in production
 app.secret_key = b'not a secret'
+
+""" # set up flask logging
+class RequestFormatter(logging.Formatter):
+    def format(self, record):
+        try:
+            record.url = request.url
+            record.remote_addr = request.remote_addr
+        except:
+            record.url = None
+            record.remote_addr = None
+
+        return super().format(record)
+
+formatter = RequestFormatter(
+    '[%(asctime)s] %(remote_addr)s requested %(url)s\n'
+    '%(levelname)s in %(module)s: %(message)s'
+)
+
+default_handler.setFormatter(formatter)
+
+logging.basicConfig(filename='app_log.log',level=logging.INFO)
+logging.FileHandler('app_log.log', mode='a')
+
+root = logging.getLogger()
+root.addHandler(default_handler) """
+
 
 
 # we store hatgame instances here
@@ -35,12 +65,14 @@ def index():
     username = request.args.get('username')
     room_id = request.args.get('room_id')
     session['username'] = username
+    link_id = request.args.get('link_id', "")
 
     if username == None:
         # before we have the username
         # they enter the username in this stage
         return render_template(
-            'index.html'
+            'index.html',
+            link_id = link_id
         )
     
     if room_id == None:
@@ -184,7 +216,7 @@ def round_(hatgame):
     #   round instruction
     #   list of users
 
-    chosen_name = request.args.get('chosen_name') # only for choose state
+    round_winner_name = request.args.get('round_winner_name') # only for choose state
     username = session['username']
     
     hatgame.change_round() # if hat is empty change state
@@ -198,18 +230,18 @@ def round_(hatgame):
         current_player = hatgame.current_player()
         current_item = hatgame.current_item()
 
-    if chosen_name != None:
+    if round_winner_name != None:
         # user has chosen a player who got the item right
         # check if the current player is the user
         if hatgame.current_player() == username:
-            hatgame.choose(username, chosen_name)
+            hatgame.choose(username, round_winner_name)
             # pick new item and player
             hatgame.pick()
             # display the micro round results
             return render_template(
-                'chosen.html',
+                'round_winner.html',
                 username = username,
-                chosen_name = chosen_name,
+                round_winner_name = round_winner_name,
                 round_number = hatgame.get_state()
             )
         else:

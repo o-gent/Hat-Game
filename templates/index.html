@@ -38,6 +38,13 @@
             margin: 1em;
         }
 
+        div.creds{
+            background-color: skyblue;
+            border-radius: 2em;
+            padding: 1em;
+            margin: 1em;
+        }
+
         div.note{
             background-color:sandybrown;
             border-radius: 2em;
@@ -92,7 +99,7 @@
                 <div class="form">
                     <label class="room_id">
                         Room id
-                        <input type="text" name="room_id" autocomplete="off">
+                        <input type="text" name="room_id" autocomplete="off" value="{{ link_id }}">
                     </label>
                 </div>
 
@@ -111,12 +118,28 @@
             </h3>
 
             <p>
-                So normally each person writes 5 characters / people on a strip of paper, folds it up then everyone puts them in a hat. You then take turns to take a name from the hat. Round 1 you can use any words to describe the character but the word itself. If someone guesses it then they keep the paper to keep track of points. Put all the paper back in the hat at the end of the round. Round 2 same again you pass the hat round but you’re only allowed to say one word. Round 3 you’re only allowed to act out the character!
+                <b>
+                    Paper version
+                </b>
+            </p>
+
+            <p>
+                Each person writes 5 characters / people on a strip of paper, folds it up then everyone puts them in a hat. You then take turns to take a name from the hat. Round 1 you can use any words to describe the character but the word itself. If someone guesses it then they keep the paper to keep track of points. Put all the paper back in the hat at the end of the round. Round 2 same again you pass the hat round but you’re only allowed to say one word. Round 3 you’re only allowed to act out the character!
+            </p>
+        </div>
+
+        <div class="creds">
+            <p>
+                Written by Oliver Gent and Joe Allen
+            </p>
+            
+            <p>
+                Code can be found at <a href="https://github.com/o-gent/Hat-Game"> Github 👩‍💻</a>
             </p>
         </div>
 
         <div class="note">
-            Note: This website uses biscuits 🍪 to keep track of the game state! Also for google analytics if we got our sh*t together but that's not a given
+            Note: This website uses biscuits 🍪 to keep track of the game state! Also for google analytics if we got our 💩 together but that's not a given
         </div>
 
     </body>

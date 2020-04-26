@@ -39,6 +39,12 @@
             Your game code is {{ room_id }}
         </h2>
 
+        <p class="js-emaillink" style="color: white;font-size: 0.1em;">
+            {{ url_for('index', link_id=room_id, _external=True) }}
+        </p>
+
+        <button class="js-emailcopybtn">Copy room link</button>
+
         <table>
             <thead>
             <tr>
@@ -78,7 +84,16 @@
         <!-- {% else %}
 
         {% endif %} -->
+        
+        <p>
+            <b>
+                Pro tip
+            </b>
 
+            the game is only as funny as you are
+        </p>
     </body>
 
+    <!-- Load the copy function once we have the rest of the doc -->
+    <script src="/static/copy.js"></script>
 </html>
