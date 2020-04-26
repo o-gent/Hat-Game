@@ -138,6 +138,24 @@ class HatGame:
     Change management 
     """
     
+    def is_round_winner(self, username):
+        return self.__user_info[username]['round_winner_page']
+    
+    
+    def set_not_round_winner(self, username):
+        self.__user_info[username]['round_winner_page'] = 0
+
+    
+    def set_round_winner(self, round_winner_name):
+        # need to go through all users and set change
+        for username in self.__user_info.keys():
+            self.__user_info[username]['round_winner_page'] = round_winner_name
+    
+
+    """
+    Winner page management 
+    """
+    
     def has_changed(self, username):
         return self.__user_info[username]['change']
     
@@ -183,7 +201,8 @@ class HatGame:
                 'points?': 0,
                 'lobby_ready': "❌",
                 'change': 0,
-                'chosen': []
+                'chosen': [],
+                'round_winner_page': 0
             }
 
     
@@ -273,7 +292,7 @@ class HatGame:
         if ready_states == expected:
             self.__state = "1"
             # move all items from temp hat to permanent
-            self.__permanent_hat = (item for item in self.__hat)
+            self.__permanent_hat = tuple(item for item in self.__hat)
             self.__users_to_go = list(self.__user_info.keys())
         else:
             raise Exception("Not everyone is ready!")
@@ -302,7 +321,6 @@ class HatGame:
 
         # pick user
         try:
-            print(self.__users_to_go)
             user = self.__users_to_go.pop(random.randint(0,len(self.__users_to_go)-1))
             self.__current_player = user
         except:
@@ -310,7 +328,6 @@ class HatGame:
 
         # give them a random item
         try:
-            print(self.__hat)
             item = self.__hat.pop(random.randint(0,len(self.__hat)-1))
             self.__current_item = item
         except:
@@ -328,12 +345,14 @@ class HatGame:
         self.__check_state(state)
 
         # check it's the correct player choosing
-        
+        if username != self.current_player():
+            raise Exception("Not this players turn to choose")
+
         # add picked_username to username chosen
+        self.__user_info[username]['chosen'].append(picked_username)
 
         # add item to picked_username won
-
-        pass
+        self.__user_info[picked_username]['won'].append(self.current_item())
 
 
     @attempt
@@ -372,10 +391,7 @@ class HatGame:
         move used hat to main hat after main hat is empty
         """
         # copy permanent hat to hat
-        print(self.__hat)
-        print(self.__permanent_hat)
         self.__hat = list(self.__permanent_hat)
-        print(self.__permanent_hat)
 
 
     """
