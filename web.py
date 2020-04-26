@@ -45,9 +45,9 @@ root.addHandler(default_handler) """
 hatgamehat: Dict[str, HatGame] = {}
 
 instructions = {
-    '1': "round 1 instructions",
-    '2': 'round 2 instructions',
-    '3': 'round 3 instructions'
+    '1': "Describe the item in with any words except for words in the item",
+    '2': 'Describe the item in one word and only one word',
+    '3': 'Act out the item!'
 }
 
 
@@ -118,7 +118,7 @@ def index():
     )
 
 
-@app.route('/game/<game_id>')
+@app.route('/game/<game_id>', methods=['GET', 'POST'])
 def game(game_id):
     """
     Display the game depending on the game_id and state of that game
@@ -230,6 +230,7 @@ def round_(hatgame):
         current_player = hatgame.current_player()
         current_item = hatgame.current_item()
 
+
     if round_winner_name != None:
         # user has chosen a player who got the item right
         # check if the current player is the user
@@ -237,17 +238,23 @@ def round_(hatgame):
             hatgame.choose(username, round_winner_name)
             # pick new item and player
             hatgame.pick()
-            # display the micro round results
-            return render_template(
-                'round_winner.html',
-                username = username,
-                round_winner_name = round_winner_name,
-                round_number = hatgame.get_state()
-            )
+            # set all user state to display round result
+            hatgame.set_round_winner(round_winner_name)
+
         else:
             # it's not that players turn to choose
             pass
     
+    round_winner_name = hatgame.is_round_winner(username)
+    if round_winner_name != 0:
+        hatgame.set_not_round_winner(username)
+        return render_template(
+            'round_winner.html',
+            username = username,
+            round_winner_name = round_winner_name,
+            round_number = hatgame.get_state()
+        )
+
     if hatgame.current_player() == username:
         # display the picker screen
         users = hatgame.all_players_except(username)
@@ -259,7 +266,7 @@ def round_(hatgame):
             user_turn = hatgame.current_player(),
             item = hatgame.current_item(),
             users = users,
-            round_instruction = round_instruction
+            instructions = round_instruction,
         )
     
     return render_template(
@@ -285,7 +292,11 @@ def refresh():
     game_id = session.get('id', None)
     username = session.get('username', None)
 
-    hatgame = hatgamehat[game_id]
+    hatgame = hatgamehat.get(game_id, None)
+
+    # if the instance doesn't exits, refresh their page
+    if hatgame == None:
+        return "1"
 
     change = hatgame.has_changed(username)
 

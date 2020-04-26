@@ -1,5 +1,15 @@
 <html>
-    <script src="/static/reload.js"></script>
+    <script>
+        var reload = setInterval(runMe, 3000);
+
+        /* 
+        * Reloads the page if there as been an update
+        */
+        function runMe()
+        {
+            window.location.replace(location.pathname);
+        }
+    </script>
     <style>
         html{
             margin: auto;
@@ -36,7 +46,7 @@
         </h2>
 
         <h3>
-            {{ username }} gave the points to {{ chosen_name }}!
+            They gave the points to {{ round_winner_name }}!
         </h3>
 
     </body>
