@@ -1,6 +1,7 @@
 import random
 from hatgame import HatGame
 from flask import Flask, Response, render_template, request, redirect, abort, url_for, session, jsonify
+from typing import Dict
 
 
 # start flask app
@@ -11,7 +12,13 @@ app.secret_key = b'not a secret'
 
 
 # we store hatgame instances here
-hatgamehat = {}
+hatgamehat: Dict[str, HatGame] = {}
+
+instructions = {
+    '1': "round 1 instructions",
+    '2': 'round 2 instructions',
+    '3': 'round 3 instructions'
+}
 
 
 @app.route('/')
@@ -177,16 +184,62 @@ def round_(hatgame):
     #   round instruction
     #   list of users
 
-    chosen_name = request.args.get('chosen_name')
+    chosen_name = request.args.get('chosen_name') # only for choose state
     username = session['username']
+    
+    hatgame.change_round() # if hat is empty change state
 
-    # we need a way of checking who's turn it is
+    current_player = hatgame.current_player()
+    current_item = hatgame.current_item()
 
+    if current_player == None:
+        # start of the round
+        hatgame.pick()
+        current_player = hatgame.current_player()
+        current_item = hatgame.current_item()
+
+    if chosen_name != None:
+        # user has chosen a player who got the item right
+        # check if the current player is the user
+        if hatgame.current_player() == username:
+            hatgame.choose(username, chosen_name)
+            # pick new item and player
+            hatgame.pick()
+            # display the micro round results
+            return render_template(
+                'chosen.html',
+                username = username,
+                chosen_name = chosen_name,
+                round_number = hatgame.get_state()
+            )
+        else:
+            # it's not that players turn to choose
+            pass
+    
+    if hatgame.current_player() == username:
+        # display the picker screen
+        users = hatgame.all_players_except(username)
+        round_instruction = instructions[hatgame.get_state()]
+        return render_template(
+            'round.html',
+            round_number = hatgame.get_state(),
+            username = username,
+            user_turn = hatgame.current_player(),
+            item = hatgame.current_item(),
+            users = users,
+            round_instruction = round_instruction
+        )
+    
     return render_template(
-        'round.html'
+        'round.html',
+        round_number = hatgame.get_state(),
+        username = username,
+        user_turn = hatgame.current_player()
     )
 
 def end():
+    # display results
+    # delete the hatgame instance
     pass
 
 
