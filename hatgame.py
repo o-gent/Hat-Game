@@ -44,6 +44,10 @@ class HatGame:
 
         self.__change = 0 # updated to 1 everytime a function runs
 
+        self.__current_player = None
+
+        self.__current_item = None
+
 
     # TODO: we get errors here even though it's valid code
     def attempt(func: Callable): 
@@ -102,9 +106,34 @@ class HatGame:
 
     def user_input_left(self, username: str) -> int:
         """
+        INFORMATION FUNCTION
         """
         return self.__name_limit - len(self.__user_info[username]['submitted'])
     
+
+    def current_player(self):
+        """
+        INFORMATION FUNCTION
+        """
+        return self.__current_player
+    
+    
+    def current_item(self):
+        """
+        INFORMATION FUNCTION
+        """
+        return self.__current_item
+    
+
+    def all_players_except(self, username: str) -> List[str]:
+        """
+        INFORMATION FUNCTION
+        """
+        players = list(self.__user_info.keys())
+        players.remove(username)
+        return players
+
+
     """
     Change management 
     """
@@ -273,11 +302,11 @@ class HatGame:
 
         # pick user
         user = self.__users_to_go.pop(random.randint(0,len(self.__hat)))
+        self.__current_player = user
 
         # give them a random item
         item = self.__hat.pop(random.randint(0,len(self.__hat)))
-
-        return user, item
+        self.__current_item = item
 
 
     @attempt
@@ -289,6 +318,8 @@ class HatGame:
         if self.get_state() in ['1', '2', '3']:
             state = self.get_state()
         self.__check_state(state)
+
+        # check it's the correct player choosing
         
         # add picked_username to username chosen
 
@@ -327,28 +358,12 @@ class HatGame:
             raise Exception("Round hasn't ended yet")
 
 
-
-    """
-    Round end state
-    """
-
     def end_round(self):
         """
         move used hat to main hat after main hat is empty
         """
         # copy permanent hat to hat
         # make user list again
-        pass
-
-    
-    """
-    Game end state
-    """
-
-    def reset(self):
-        """
-        delete the object?
-        """
         pass
 
 

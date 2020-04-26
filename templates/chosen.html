@@ -1,0 +1,43 @@
+<html>
+    <script src="/static/reload.js"></script>
+    <style>
+        html{
+            margin: auto;
+            max-width: 1000px;
+        }
+        
+        body{
+            text-align: center;
+        }
+
+        table{
+            margin: 0px auto;
+            padding: 2em;
+        }
+    </style>
+
+    <head>
+
+    </head>
+
+    <body>
+        <h1 class="home" style="font-size: 3em;">
+            <a 
+                href="/" 
+                style="text-decoration: none;" 
+                onclick="return confirm('Are you sure you want to go to home?')"
+            >
+                🎩
+            </a>
+        </h1>
+
+        <h2>
+            Round {{ round_number }}
+        </h2>
+
+        <h3>
+            {{ username }} chose {{ chosen_name }}!
+        </h3>
+
+    </body>
+</html>
