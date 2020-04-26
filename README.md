@@ -1,5 +1,9 @@
 # The Hat Game
 
+Python flask website of the hat game which allows concurrent games.
+
+![alt text](assets/hat.jpg "hat")
+
 ## todo
 
 - [] hello 
