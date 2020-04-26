@@ -41,9 +41,19 @@
 
         {% if user_turn == username %}
             <!-- display the item -->
+            <p>
+                {{ item }}
+            </p>
             <!-- display a list of users to pick from -->
+            <form method="get">
+                {% for user in users %}
+                    <input type="hidden" name="round_winner_name" value="{{ user }}">
+                    <button>{{user}}</button>
+                {% endfor %}
+            </form>
         {% else %}
             <!-- show who's go it is -->
+            It is currently {{user_turn}}'s go!
         {% endif %}
 
     </body>

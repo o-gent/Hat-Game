@@ -50,7 +50,7 @@ class HatGame:
 
 
     # TODO: we get errors here even though it's valid code
-    def attempt(func: Callable): 
+    def attempt(func: Callable):
         """
         Error handles any function
         Function must not return something normally
@@ -301,12 +301,20 @@ class HatGame:
             self.__users_to_go = list(self.__user_info.keys())
 
         # pick user
-        user = self.__users_to_go.pop(random.randint(0,len(self.__hat)))
-        self.__current_player = user
+        try:
+            print(self.__users_to_go)
+            user = self.__users_to_go.pop(random.randint(0,len(self.__users_to_go)-1))
+            self.__current_player = user
+        except:
+            raise Exception("User picking didn't work")
 
         # give them a random item
-        item = self.__hat.pop(random.randint(0,len(self.__hat)))
-        self.__current_item = item
+        try:
+            print(self.__hat)
+            item = self.__hat.pop(random.randint(0,len(self.__hat)-1))
+            self.__current_item = item
+        except:
+            raise Exception("Item picking didn't work")
 
 
     @attempt
@@ -357,14 +365,17 @@ class HatGame:
         else:
             raise Exception("Round hasn't ended yet")
 
-
+    
+    @attempt
     def end_round(self):
         """
         move used hat to main hat after main hat is empty
         """
         # copy permanent hat to hat
-        # make user list again
-        pass
+        print(self.__hat)
+        print(self.__permanent_hat)
+        self.__hat = list(self.__permanent_hat)
+        print(self.__permanent_hat)
 
 
     """
@@ -407,7 +418,8 @@ if __name__ == "__main__":
         "b",
         "c", 
         "d",
-        "e"
+        "e",
+        "f"
     ]
 
     player = "Player1"
@@ -429,7 +441,9 @@ if __name__ == "__main__":
     hatgame.users_input_ready()
 
 
-    
-
+    print(hatgame.pick())
+    print(hatgame.change_round())
+    print(hatgame.current_player())
+    print(hatgame.current_item())
     print(hatgame.get_state())
 
