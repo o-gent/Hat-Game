@@ -42,7 +42,7 @@
         {% if user_turn == username %}
             <!-- display the item -->
             <h4>
-                You pulled {{ item }} out of that hat!
+                You pulled {{ item }} out of the hat!
             </h4>
 
             <p>
@@ -53,12 +53,12 @@
                 When someone guesses the item, choose their name from the list below!
             </p>
 
+            {% for user in users %}
             <form method="get">
-                {% for user in users %}
                     <input type="hidden" name="round_winner_name" value="{{ user }}">
-                    <button>{{user}}</button>
-                {% endfor %}
+                    <button>{{ user }}</button>
             </form>
+            {% endfor %}
         {% else %}
             <!-- show who's go it is -->
             <p>

@@ -48,6 +48,8 @@ class HatGame:
 
         self.__current_item = None
 
+        self.__previous_users_list = []
+
 
     # TODO: we get errors here even though it's valid code
     def attempt(func: Callable):
@@ -134,33 +136,48 @@ class HatGame:
         return players
 
 
+    # all change management could be done through a common interface
+    # probably in a seperate class, doesn't need to be in this one?
+
     """
-    Change management 
+    Winner page management 
     """
     
-    def is_round_winner(self, username):
+    def is_round_winner(self, username: str):
         return self.__user_info[username]['round_winner_page']
     
     
-    def set_not_round_winner(self, username):
+    def set_not_round_winner(self, username: str):
         self.__user_info[username]['round_winner_page'] = 0
 
     
-    def set_round_winner(self, round_winner_name):
+    def set_round_winner(self, round_winner_name: str):
         # need to go through all users and set change
         for username in self.__user_info.keys():
             self.__user_info[username]['round_winner_page'] = round_winner_name
     
 
     """
-    Winner page management 
+    round change management
+    """
+
+    def previous_state(self, username: str):
+        return self.__user_info[username]['round_change']
+    
+
+    def set_previous_state(self, username: str):
+        self.__user_info[username]['round_change'] = self.get_state()
+
+
+    """
+    Change management 
     """
     
-    def has_changed(self, username):
+    def has_changed(self, username: str):
         return self.__user_info[username]['change']
     
     
-    def reset_change(self, username):
+    def reset_change(self, username: str):
         self.__user_info[username]['change'] = 0
 
     
@@ -202,7 +219,8 @@ class HatGame:
                 'lobby_ready': "❌",
                 'change': 0,
                 'chosen': [],
-                'round_winner_page': 0
+                'round_winner_page': 0,
+                'round_change': '1'
             }
 
     
@@ -242,8 +260,10 @@ class HatGame:
         if ready_states == expected:
             self.__state = "input"
             self.__name_limit = int(25/len(expected)) # number of names a user can enter
-            if self.__name_limit > 6:
-                self.__name_limit = 6
+            if self.__name_limit > 2:  # NAME LIMIT SHOULD BE 6 BUT 2 FOR TESTING
+                self.__name_limit = 2
+            self.__previous_users_list = list(self.__user_info.keys())
+            
         else:
             raise Exception("Not everyone is ready!")
 
@@ -315,13 +335,19 @@ class HatGame:
         self.__check_state(state)
 
 
+
         # if been through users, refresh list
         if len(self.__users_to_go) == 0:
-            self.__users_to_go = list(self.__user_info.keys())
+
+            new_last_user = self.__previous_users_list.pop(0)
+            self.__previous_users_list.append(new_last_user)
+
+            self.__users_to_go = self.__previous_users_list
+            
 
         # pick user
         try:
-            user = self.__users_to_go.pop(random.randint(0,len(self.__users_to_go)-1))
+            user = self.__users_to_go.pop(0)
             self.__current_player = user
         except:
             raise Exception("User picking didn't work")
@@ -458,6 +484,7 @@ if __name__ == "__main__":
 
 
     print(hatgame.pick())
+    print(hatgame.choose(hatgame.current_player(), "Player3"))
     print(hatgame.change_round())
     print(hatgame.current_player())
     print(hatgame.current_item())

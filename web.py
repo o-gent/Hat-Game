@@ -219,7 +219,21 @@ def round_(hatgame):
     round_winner_name = request.args.get('round_winner_name') # only for choose state
     username = session['username']
     
+
     hatgame.change_round() # if hat is empty change state
+    
+    # if the round has changed, show the round change page
+    if hatgame.get_state() != hatgame.previous_state(username):
+        round_instruction = instructions[hatgame.get_state()]
+        hatgame.set_previous_state(username)
+        return render_template(
+            'round_change.html',
+            round = hatgame.get_state(),
+            state = hatgame.get_state(),
+            instructions = round_instruction
+        )
+    hatgame.set_previous_state(username)
+
 
     current_player = hatgame.current_player()
     current_item = hatgame.current_item()
@@ -245,12 +259,13 @@ def round_(hatgame):
             # it's not that players turn to choose
             pass
     
+    # check if there has been a round winner since last state change
     round_winner_name = hatgame.is_round_winner(username)
+    # if round winner is zero, we haven't had a round winner
     if round_winner_name != 0:
         hatgame.set_not_round_winner(username)
         return render_template(
             'round_winner.html',
-            username = username,
             round_winner_name = round_winner_name,
             round_number = hatgame.get_state()
         )
