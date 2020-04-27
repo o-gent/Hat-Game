@@ -3,42 +3,26 @@ from hatgame import HatGame
 from flask import Flask, Response, render_template, request, redirect, abort, url_for, session, jsonify
 from typing import Dict
 import logging
-from flask.logging import default_handler
+import time
 
 # start flask app
 app = Flask(__name__)
 
-# web domain
-#app.config['SERVER_NAME'] = "127.0.0.1:5000"
 
 # This needs to be set properly in production
 app.secret_key = b'not a secret'
 
-""" # set up flask logging
-class RequestFormatter(logging.Formatter):
-    def format(self, record):
-        try:
-            record.url = request.url
-            record.remote_addr = request.remote_addr
-        except:
-            record.url = None
-            record.remote_addr = None
 
-        return super().format(record)
-
-formatter = RequestFormatter(
-    '[%(asctime)s] %(remote_addr)s requested %(url)s\n'
-    '%(levelname)s in %(module)s: %(message)s'
+# SETUP logging 
+logging.basicConfig(
+	format='%(asctime)s - %(levelname)s - %(message)s',
+	datefmt='%H:%M:%S',
+	level = logging.INFO,
+	handlers=[
+		logging.FileHandler(f"logs/{time.strftime('%Y%m%d-%H%M%S')}.log"),
+		logging.StreamHandler()
+	]
 )
-
-default_handler.setFormatter(formatter)
-
-logging.basicConfig(filename='app_log.log',level=logging.INFO)
-logging.FileHandler('app_log.log', mode='a')
-
-root = logging.getLogger()
-root.addHandler(default_handler) """
-
 
 
 # we store hatgame instances here
@@ -57,6 +41,16 @@ def mobile_check():
     if request.user_agent.platform in mobile_devices:
         mobile = True
     return mobile
+
+
+@app.after_request
+def after_request(response):
+    # don't want to log refresh 
+    if request.path == '/refresh':
+        return response
+    # log usage data
+    logging.info(f"{request.remote_addr} | {request.url} | {request.user_agent.platform} | {request.status_code}")
+    return response
 
 
 @app.route('/')
