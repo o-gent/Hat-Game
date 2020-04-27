@@ -13,6 +13,13 @@
             font-size: 3em;
         }
 
+        div.error{
+            background-color:indianred;
+            border-radius: 2em;
+            padding: 1em;
+            margin: 1em;
+        }
+
         div.create{
             background-color: aquamarine;
             border-radius: 2em;
@@ -62,6 +69,13 @@
             The Hat Game 🎩
         </h1>
 
+        {% if error %}
+            <div class="error">
+                <p>
+                    ⚠ {{ error }}
+                </p>
+            </div>
+        {% endif %}
 
         <div class="create">
             <h2>
@@ -106,10 +120,6 @@
                 <input type="submit" value="Play game!">
             
             </form>
-
-            <p>
-                {{ error }}
-            </p>
         </div>
 
         <div class="instructions">

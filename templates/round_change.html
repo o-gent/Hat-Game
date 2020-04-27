@@ -1,0 +1,54 @@
+<html>
+    <script>
+        var reload = setInterval(runMe, 3000);
+
+        /* 
+        * Reloads the page if there as been an update
+        */
+        function runMe()
+        {
+            window.location.replace(location.pathname);
+        }
+    </script>
+    <style>
+        html{
+            margin: auto;
+            max-width: 1000px;
+        }
+        
+        body{
+            text-align: center;
+        }
+
+        table{
+            margin: 0px auto;
+            padding: 2em;
+        }
+    </style>
+
+    <head>
+
+    </head>
+
+    <body>
+        <h1 class="home" style="font-size: 3em;">
+            <a 
+                href="/" 
+                style="text-decoration: none;" 
+                onclick="return confirm('Are you sure you want to go to home?')"
+            >
+                🎩
+            </a>
+        </h1>
+
+        <h2>
+            It's now round {{ round_number }}
+        </h2>
+
+        <h3>
+            {{ instructions }}
+        </h3>
+
+
+    </body>
+</html>
