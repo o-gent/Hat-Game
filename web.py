@@ -49,7 +49,7 @@ def after_request(response):
     if request.path == '/refresh':
         return response
     # log usage data
-    logging.info(f"{request.remote_addr} | {request.url} | {request.user_agent.platform} | {request.status_code}")
+    logging.info(f"{request.remote_addr} | {request.url} | {request.user_agent.platform} | {response.status_code}")
     return response
 
 
