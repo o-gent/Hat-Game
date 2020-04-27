@@ -16,26 +16,28 @@
         }
     </style>
 
+
     {% if mobile %}
     <style>
         input{
-            font-size: x-large;
+            font-size: xx-large;
         }
 
         html{
-            font-size: x-large !important;
+            font-size:  xx-large !important;
         }
 
         table{
-            font-size: x-large !important;
+            font-size:  xx-large !important;
         }
 
         button{
-            font-size: x-large !important;
+            font-size:  xx-large !important;
         }
 
     </style>
     {% endif %}
+
 
     <head>
 
@@ -88,6 +90,8 @@
             </tbody>
         </table>
 
+        
+        {% if all_users|length > 1 %}
 
             {% if all_users[username] != 1  %}
                 <form method="get">
@@ -100,11 +104,11 @@
             </p>
             {% endif %}
 
-        <!-- {% if all_users|length > 1 %} -->
-
-        <!-- {% else %}
-
-        {% endif %} -->
+        {% else %}
+            <p>
+                You're the only one in the lobby, invite some people!
+            </p>
+        {% endif %}
         
     </body>
 

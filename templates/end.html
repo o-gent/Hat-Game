@@ -13,24 +13,39 @@
             margin: 0px auto;
             padding: 2em;
         }
+
+        div.scores{
+            background-color:khaki;
+            border-radius: 2em;
+            padding: 1em;
+            margin: 1em;
+        }
+
+        div.bias{
+            background-color:lavender;
+            border-radius: 2em;
+            padding: 1em;
+            margin: 1em;
+        }
     </style>
+
 
     {% if mobile %}
     <style>
         input{
-            font-size: x-large;
+            font-size: xx-large;
         }
 
         html{
-            font-size: x-large !important;
+            font-size:  xx-large !important;
         }
 
         table{
-            font-size: x-large !important;
+            font-size:  xx-large !important;
         }
 
         button{
-            font-size: x-large !important;
+            font-size:  xx-large !important;
         }
 
     </style>
@@ -64,18 +79,25 @@
             Scores
         </h3>
         
-        {% for user in scores.keys() %}
-            <p>    
-                {{ user }} got {{ scores[user] }} right!
-            </p>
-        {% endfor %}
+        <div class="scores">
+            {% for user in scores.keys() %}
+                <p>    
+                    {{ user }} got {{ scores[user] }} right!
+                </p>
+            {% endfor %}
+        </div>
 
+        <h3>
+            Bias? 😯
+        </h3>
 
-        {% for user in bias.keys() %}
-            <p>
-                {{ user }} chose {{ bias[user] }} the most!
-            </p>
-        {% endfor %}
+        <div class="bias">
+            {% for user in bias.keys() %}
+                <p>
+                    {{ user }} chose {{ bias[user] }} the most!
+                </p>
+            {% endfor %}
+        </div>
 
 
     </body>

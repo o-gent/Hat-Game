@@ -14,26 +14,28 @@
         }
     </style>
 
+
     {% if mobile %}
     <style>
         input{
-            font-size: x-large;
+            font-size: xx-large;
         }
 
         html{
-            font-size: x-large !important;
+            font-size:  xx-large !important;
         }
 
         table{
-            font-size: x-large !important;
+            font-size:  xx-large !important;
         }
 
         button{
-            font-size: x-large !important;
+            font-size:  xx-large !important;
         }
 
     </style>
     {% endif %}
+
 
     <body>
         <h1 class="home" style="font-size: 3em;">
@@ -50,27 +52,29 @@
             {{ user }} you can put {{ items_left }} more items into the hat!
         </h2>
         
-        <form method="get">
-            
-            <div class="form">
-                <div>
-                    <label class="country">
-                        <input type="text" name="input_name" autocomplete="off">
-                    </label>
+        {% if items_left != 0 %}
+            <form method="get">
+                
+                <div class="form">
+                    <div>
+                        <label class="country">
+                            <input type="text" name="input_name" autocomplete="off">
+                        </label>
+                    </div>
                 </div>
-            </div>
 
-            <input type="submit" value="Submit">
-        
-        </form>
-        
-        <p>
-            {{ message }}
-        </p>
-
-        <p>
-            {{ ready }}
-        </p>
+                <input type="submit" value="Submit">
+            
+            </form>
+            
+            <p>
+                {{ message }}
+            </p>
+        {% else %}
+            <p>
+                {{ ready }}
+            </p>
+        {% endif %}
 
     </body>
 </html>
