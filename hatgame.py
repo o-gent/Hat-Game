@@ -137,7 +137,7 @@ class HatGame:
 
 
     def winner(self):
-        scores = self.scores
+        scores = self.scores()
         return max(scores, key=scores.get)
 
 
@@ -276,8 +276,8 @@ class HatGame:
         if ready_states == expected:
             self.__state = "input"
             self.__name_limit = int(25/len(expected)) # number of names a user can enter
-            if self.__name_limit > 2:  # NAME LIMIT SHOULD BE 6 BUT 2 FOR TESTING
-                self.__name_limit = 2
+            if self.__name_limit > 6:  # NAME LIMIT SHOULD BE 6 BUT 2 FOR TESTING
+                self.__name_limit = 6
             
             self.__previous_users_list = list(self.__user_info.keys())
             
