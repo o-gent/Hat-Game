@@ -1,6 +1,6 @@
 <html>
     <script>
-        var reload = setInterval(runMe, 3000);
+        var reload = setInterval(runMe, 8000);
 
         /* 
         * Reloads the page if there as been an update
@@ -26,6 +26,27 @@
         }
     </style>
 
+    {% if mobile %}
+    <style>
+        input{
+            font-size: x-large;
+        }
+
+        html{
+            font-size: x-large !important;
+        }
+
+        table{
+            font-size: x-large !important;
+        }
+
+        button{
+            font-size: x-large !important;
+        }
+
+    </style>
+    {% endif %}
+
     <head>
 
     </head>
@@ -48,6 +69,30 @@
         <h3>
             {{ instructions }}
         </h3>
+
+
+        <table>
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Score</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for user in scores.keys() %}
+                    <tr>
+                        <td>
+                            {{ user }}
+                        </td>
+                        
+                        <td>
+                            {{ scores[user] }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
 
 
     </body>

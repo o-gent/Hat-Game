@@ -26,6 +26,27 @@
         }
     </style>
 
+    {% if mobile %}
+    <style>
+        input{
+            font-size: x-large;
+        }
+
+        html{
+            font-size: x-large !important;
+        }
+
+        table{
+            font-size: x-large !important;
+        }
+
+        button{
+            font-size: x-large !important;
+        }
+
+    </style>
+    {% endif %}
+
     <head>
 
     </head>
@@ -42,12 +63,12 @@
         </h1>
 
         <h2>
-            Round {{ round_number }}
+            They gave the points to {{ round_winner_name }}!
         </h2>
 
-        <h3>
-            They gave the points to {{ round_winner_name }}!
-        </h3>
+        <h2>
+            🎉
+        </h2>
 
     </body>
 </html>
