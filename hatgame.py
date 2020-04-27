@@ -1,33 +1,32 @@
 import random
 from typing import List, Tuple, Dict, Callable
 import uuid
+import datetime
+
+
+def most_common(lst):
+    """
+    https://stackoverflow.com/questions/1518522/find-the-most-common-element-in-a-list
+    """
+    return max(set(lst), key=lst.count)
 
 
 class HatGame:
     """
     The hat game 
-    States
-    
+    States:
     - lobby 
-    
     - input
-    
-    - round 1
-    
-    - end round
-
-    - ..
-    
+    - round 1, 2, 3
+    - end
     """
 
     def __init__(self, number_of_players=10):
-        """
-        @params -> None
-        @returns -> HatGame object
-        """
         
         """ public """
-        self.id = str(uuid.uuid4()) # id of party        
+        self.id = str(uuid.uuid4()) # id of party
+
+        self.creation_time = datetime.datetime.now()  
 
         """ private """
         self.__name_limit = int(25/number_of_players) # number of names a user can enter
@@ -52,7 +51,7 @@ class HatGame:
 
 
     # TODO: we get errors here even though it's valid code
-    def attempt(func: Callable):
+    def attempt(func: Callable) -> Callable:
         """
         Error handles any function
         Function must not return something normally
@@ -60,15 +59,12 @@ class HatGame:
         def inner(self, *args, **kwargs) -> str:
             try:
                 result = func(self, *args, **kwargs)
+                self.set_change()
                 if result == None:
-                    self.set_change()
                     return "Success"
                 else:
-                    self.set_change()
                     return result
-
             except Exception as e:
-                # function failed
                 return e.args[0]
         return inner
 
@@ -135,6 +131,26 @@ class HatGame:
         players.remove(username)
         return players
 
+    
+    def scores(self):
+        return {username: len(self.__user_info[username]['won']) for username in self.__user_info.keys()}
+
+
+    def winner(self):
+        scores = self.scores
+        return max(scores, key=scores.get)
+
+
+    def bias(self):
+        """
+        finds who chose who the most for each user
+        """
+        result = {}
+        for user in self.__user_info.keys():
+            chosen = self.__user_info[user]['chosen']
+            result[user] = most_common(chosen)
+        return result
+
 
     # all change management could be done through a common interface
     # probably in a seperate class, doesn't need to be in this one?
@@ -155,7 +171,7 @@ class HatGame:
         # need to go through all users and set change
         for username in self.__user_info.keys():
             self.__user_info[username]['round_winner_page'] = round_winner_name
-    
+  
 
     """
     round change management
@@ -262,6 +278,7 @@ class HatGame:
             self.__name_limit = int(25/len(expected)) # number of names a user can enter
             if self.__name_limit > 2:  # NAME LIMIT SHOULD BE 6 BUT 2 FOR TESTING
                 self.__name_limit = 2
+            
             self.__previous_users_list = list(self.__user_info.keys())
             
         else:
@@ -334,17 +351,10 @@ class HatGame:
             state = self.get_state()
         self.__check_state(state)
 
-
-
         # if been through users, refresh list
         if len(self.__users_to_go) == 0:
-
-            new_last_user = self.__previous_users_list.pop(0)
-            self.__previous_users_list.append(new_last_user)
-
-            self.__users_to_go = self.__previous_users_list
+            self.__users_to_go = self.__previous_users_list.copy()
             
-
         # pick user
         try:
             user = self.__users_to_go.pop(0)
@@ -418,6 +428,9 @@ class HatGame:
         """
         # copy permanent hat to hat
         self.__hat = list(self.__permanent_hat)
+        # change the order of the user list
+        new_last_user = self.__previous_users_list.pop(0)
+        self.__previous_users_list.append(new_last_user)
 
 
     """
@@ -483,10 +496,13 @@ if __name__ == "__main__":
     hatgame.users_input_ready()
 
 
-    print(hatgame.pick())
-    print(hatgame.choose(hatgame.current_player(), "Player3"))
     print(hatgame.change_round())
+
+    print(hatgame.pick())
     print(hatgame.current_player())
     print(hatgame.current_item())
+    
+    print(hatgame.choose(hatgame.current_player(), "Player3"))
+    
     print(hatgame.get_state())
 
