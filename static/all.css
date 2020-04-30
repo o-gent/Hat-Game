@@ -1,0 +1,58 @@
+html{
+    margin: auto;
+    max-width: 1000px;
+}
+
+body{
+    text-align: center;
+}
+
+h1.main_title{
+    font-size: 3em;
+}
+
+div.error{
+    background-color:indianred;
+    border-radius: 2em;
+    padding: 1em;
+    margin: 1em;
+}
+
+div.create{
+    background-color: aquamarine;
+    border-radius: 2em;
+    padding: 1em;
+    margin: 1em;
+}
+
+div.join{
+    background-color:crimson;
+    border-radius: 2em;
+    padding: 1em;
+    margin: 1em;
+}
+
+div.form{
+    padding: 1em;
+}
+
+div.instructions{
+    background-color:gainsboro;
+    border-radius: 2em;
+    padding: 1em;
+    margin: 1em;
+}
+
+div.creds{
+    background-color: skyblue;
+    border-radius: 2em;
+    padding: 1em;
+    margin: 1em;
+}
+
+div.note{
+    background-color:sandybrown;
+    border-radius: 2em;
+    padding: 1em;
+    margin: 1em;
+}

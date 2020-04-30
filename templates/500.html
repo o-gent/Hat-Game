@@ -1,1 +1,114 @@
-internal :(
+
+<head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <style>
+        * {margin: 0; padding: 0}
+        body {
+            background: #000;
+            justify-content: center;
+        }
+        canvas {display: block;}
+
+        .text_1 {
+            animation: text1;
+        }
+
+        .text_2 {
+            animation: text2;
+        }
+
+        .text_1, .text_2{
+            overflow: hidden;
+            white-space: nowrap;
+            display: inline-block;
+            position: relative;
+            animation-duration: 20s;
+            animation-timing-function: steps(25, end);
+            animation-iteration-count: infinite;
+        }
+
+        .text_1::after, .text_2::after{
+            content: "|";
+            position: absolute;
+            right: 0;
+            animation: caret infinite;
+            animation-duration: 1s;
+            animation-timing-function: steps(1, end);
+        }
+
+        @keyframes text2 {
+            0%, 50%, 100% {
+                width: 0;
+            }
+        
+            60%, 90% {
+                width: 13em;
+            }
+        }
+
+        @keyframes text1 {
+            0%, 50%, 100% {
+                width: 0;
+            }
+            10%, 40% {
+                width: 9em;
+            }
+        }
+
+        @keyframes caret {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        {% if mobile %}
+            div.wrapper{
+                max-width: 80% !important;
+                margin: auto;
+                font-size: xx-large;
+            }
+
+        {% endif %}
+    </style>
+</head>
+
+<body>
+    <canvas>
+
+    </canvas>
+
+    <div class="wrapper" style="margin: auto;max-width: 1000px;">
+        <div class="wrapper" style="position: absolute; left: auto; top: 10px; width:auto;">
+            <h1 class="home" style="font-size: 3em; text-align: center;">
+                <a 
+                    href="/" 
+                    style="text-decoration: none;" 
+                    onclick="return confirm('Are you sure you want to go to home?')"
+                >
+                    🎩
+                </a>
+            </h1>
+
+            <div style="padding: 3em; font-family: 'Courier New', Courier, monospace;">
+                <h2 class="text_1" style="color: white;">
+                    Wake up. Neo.. 
+                </h2>
+
+                <h2 class="text_2" style="color: white;">
+                    The Matrix has you...
+                </h2>
+            </div>
+
+            <h3 style="color: white;">
+                Reconnect to the game by using the same invite link and entering the same username you had before!
+            </h3>
+        </div>
+    </div>
+
+</body>
+
+<script src="/static/matrix.js"></script>
