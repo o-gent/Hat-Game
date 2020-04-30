@@ -2,3 +2,4 @@
 __pycache__
 app_log.log
 logs
+.vscode
