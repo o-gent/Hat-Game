@@ -4,14 +4,14 @@ Python flask website of the hat game which allows concurrent games.
 
 ## todo
 
--[ ] Setup automatic installation of project (setup.py)
+ - [ ] Setup automatic installation of project (setup.py)
 
--[ ] Tests 🎉
+ - [ ] Tests 🎉
 
--[ ] Everything should be in a src folder
+ - [ ] Everything should be in a src folder
 
--[ ] Contribution guide
+ - [ ] Contribution guide
 
--[ ] Error pages
+ - [ ] Error pages
 
 ![alt text](assets/hat.jpg "hat")
