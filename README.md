@@ -2,17 +2,16 @@
 
 Python flask website of the hat game which allows concurrent games.
 
-![alt text](assets/hat.jpg "hat")
-
 ## todo
 
-- [] hello 
+-[ ] Setup automatic installation of project (setup.py)
 
-## Notes
+-[ ] Tests 🎉
 
-- Lobby forgetting user when submitting ready check box
-    -> use sessions https://flask.palletsprojects.com/en/1.1.x/quickstart/#sessions
+-[ ] Everything should be in a src folder
 
-- Get hatgame.py working then work on web interface
+-[ ] Contribution guide
 
-- address game by website/<lobby_id>/lobby
+-[ ] Error pages
+
+![alt text](assets/hat.jpg "hat")

@@ -51,7 +51,7 @@ class HatGame:
 
 
     # TODO: we get errors here even though it's valid code
-    def attempt(func: Callable) -> Callable:
+    def attempt(func: Callable) -> Callable: # type: ignore
         """
         Error handles any function
         Function must not return something normally

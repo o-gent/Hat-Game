@@ -9,7 +9,8 @@ import time
 app = Flask(__name__)
 
 
-# This needs to be set properly in production
+# This "needs" to be set properly in production
+# it's for cookie signing but we don't handle sensitive info  
 app.secret_key = b'not a secret'
 
 
@@ -17,7 +18,7 @@ app.secret_key = b'not a secret'
 logging.basicConfig(
 	format='%(asctime)s - %(levelname)s - %(message)s',
 	datefmt='%H:%M:%S',
-	level = logging.INFO,
+	level = logging.INFO,   
 	handlers=[
 		logging.FileHandler(f"logs/{time.strftime('%Y%m%d-%H%M%S')}.log"),
 		logging.StreamHandler()
@@ -35,12 +36,8 @@ instructions = {
 }
 
 
-def mobile_check():
-    mobile = False
-    mobile_devices = ["android", "iphone"]
-    if request.user_agent.platform in mobile_devices:
-        mobile = True
-    return mobile
+def mobile_check() -> bool:
+    return True if request.user_agent.platform in ["android", "iphone"] else False # type: ignore
 
 
 @app.after_request
@@ -51,6 +48,24 @@ def after_request(response):
     # log usage data
     logging.info(f"{request.remote_addr} | {request.url} | {request.user_agent.platform} | {response.status_code}")
     return response
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """
+    https://flask.palletsprojects.com/en/1.1.x/patterns/errorpages/
+    """
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(e):
+    """
+    https://flask.palletsprojects.com/en/1.1.x/patterns/errorpages/
+    """
+    # note that we set the 404 status explicitly
+    return render_template('500.html'), 500
 
 
 @app.route('/')
@@ -64,35 +79,38 @@ def index():
 
     """
     mobile = mobile_check()
-    
+
     username = request.args.get('username')
     room_id = request.args.get('room_id')
-    session['username'] = username
     link_id = request.args.get('link_id', "")
 
+    session['username'] = username
+    session.permanent = True # means the cookie persists after the client has disconnected for 31 days
+
+    # if they haven't entered a username, displayer the landing page
     if username == None:
-        # before we have the username
-        # they enter the username in this stage
         return render_template(
             'index.html',
             link_id = link_id,
             mobile = mobile
         )
     
+    # if they have entered a username but no room_id then they want to create a game
     if room_id == None:
         # then create a new game
         hatgame = HatGame()
         hatgamehat[hatgame.id] = hatgame # put hatgame in the game hat
         hatgame.add_user(username) # add to the hat
-        session['id'] = hatgame.id
+        session['id'] = hatgame.id # required for refresh function 
         # redirect to /<room_id>
         return redirect(
             url_for(
                 'game',
                 game_id=hatgame.id,
-                mobile = mobile
             )
         )
+
+    # if they enter a username and room_id, they want to join a game
 
     # join the new game if it exists
     hatgame = hatgamehat.get(room_id, None)
@@ -105,23 +123,32 @@ def index():
             error = "That game doesn't exist",
             mobile = mobile
         )
+    
+    session['id'] = hatgame.id # required for refresh function 
 
-    if hatgame.add_user(username) != "Success":
-        # return the index pagge with an error message
-        return render_template(
-            'index.html',
-            error = "Enter a username!",
-            mobile = mobile
-        )
-
-    session['id'] = hatgame.id
+    # if the username already exists in the game, add them back
+    if username in hatgame.get_user_info().keys():
+        # skip adding to game
+        pass
+    else:
+        # add the username to the game
+        message = hatgame.add_user(username)
+        
+        if message != "Success":
+            # return the index page with an error message
+            return render_template(
+                'index.html',
+                error = message,
+                mobile = mobile
+            )
+        else:
+            pass
 
     # redirect to /game/<room_id>
     return redirect(
         url_for(
             'game',
             game_id=hatgame.id,
-            mobile = mobile
         )
     )
 
@@ -328,8 +355,8 @@ def refresh():
 
     hatgame = hatgamehat.get(game_id, None)
 
-    # if the instance doesn't exits, refresh their page
-    if hatgame == None:
+    # if the instance doesn't exist, refresh their page
+    if hatgame == None or username == None:
         return "1"
 
     change = hatgame.has_changed(username)

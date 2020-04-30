@@ -61,6 +61,8 @@
     </style>
 
     <head>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        
         {% if mobile %}
             <link rel="stylesheet" type="text/css" href="/static/mobile.css">
         {% endif %}
