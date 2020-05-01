@@ -368,9 +368,13 @@ def refresh():
 
     hatgame = hatgamehat.get(game_id, None)
 
-    # if the instance doesn't exist, refresh their page
-    if hatgame == None or username == None:
+    # if the instance doesn't exist, refresh their page and return them to home
+    if hatgame == None:
         return "1"
+    
+    # if they have lost their username, don't refresh their page as this will just keep on going
+    if username == None:
+        return "0"
 
     change = hatgame.has_changed(username)
 

@@ -37,7 +37,11 @@
         </h1>
 
         <h1>
-            {{ username }} you are waiting for everyone to ready up!
+            {% if username == None %}
+                You've lost your username :( please return to home and rejoin!
+            {% else %}
+                {{ username }} you are waiting for everyone to ready up!
+            {% endif %}
         </h1>
 
         <h2>
