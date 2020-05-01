@@ -102,6 +102,8 @@ def index():
     """
     mobile = mobile_check()
 
+    session['username'] = None
+
     username = request.args.get('username')
     room_id = request.args.get('room_id')
     link_id = request.args.get('link_id', "")
