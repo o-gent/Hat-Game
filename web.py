@@ -113,7 +113,7 @@ def index():
 
     # ahhh
     try:
-        if username.strip == "":
+        if username.strip() == "":
             # return the index page with an error message
             return render_template(
                 'index.html',
