@@ -12,6 +12,10 @@
         body{
             text-align: center;
         }
+
+        div.form{
+            padding: 1em;
+        }
     </style>
 
     <head>
@@ -37,6 +41,10 @@
         <h2>
             {{ user }} you can put {{ items_left }} more items into the hat!
         </h2>
+
+        <p>
+            These should be people/characters/beings that your party will try to guess
+        </p>
         
         {% if items_left != 0 %}
             <form method="get">

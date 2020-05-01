@@ -8,11 +8,21 @@
         
         body{
             text-align: center;
+            display:flex; 
+            flex-direction:column; 
         }
 
         table{
             margin: 0px auto;
             padding: 2em;
+        }
+
+        p{
+            margin: 0.5em;
+        }
+
+        form{
+            padding: 1em;
         }
     </style>
 
@@ -40,18 +50,21 @@
         </h2>
 
         <h3>
-            Hey {{ username }}
+            Hey {{ username }},
+
+            {% if user_turn == username %}
+
+            the hat gave you {{ item }}!
+
+            {% endif %}
         </h3>
 
         {% if user_turn == username %}
-            <!-- display the item -->
-            <h4>
-                You pulled {{ item }} out of the hat!
-            </h4>
 
             <p>
                 {{ instructions }}
             </p>
+            
             <!-- display a list of users to pick from -->
             <p>
                 When someone guesses the item, choose their name from the list below!
@@ -63,12 +76,18 @@
                     <button>{{ user }}</button>
             </form>
             {% endfor %}
+        
         {% else %}
             <!-- show who's go it is -->
             <p>
                 It is currently {{user_turn}}'s go!
             </p>
         {% endif %}
-
+        
     </body>
+    <footer style="margin-top:auto;">
+        <p>
+            Just imagine the website looks pretty
+        </p>
+    </div>
 </html>
