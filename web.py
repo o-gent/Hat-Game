@@ -1,6 +1,6 @@
 import random
 from hatgame import HatGame
-from flask import Flask, Response, render_template, request, redirect, abort, url_for, session, jsonify
+from flask import Flask, Response, render_template, request, redirect, abort, url_for, session, jsonify, g
 from typing import Dict
 import logging
 import time
@@ -40,13 +40,22 @@ def mobile_check() -> bool:
     return True if request.user_agent.platform in ["android", "iphone"] else False # type: ignore
 
 
+@app.before_request
+def before_request():
+    g.start = time.time()
+
+
 @app.after_request
 def after_request(response):
     # don't want to log refresh 
     if request.path == '/refresh':
         return response
+    
+    # time for request
+    diff = time.time() - g.start
+
     # log usage data
-    logging.info(f"{request.remote_addr} | {request.url} | {request.user_agent.platform} | {response.status_code}")
+    logging.info(f"{request.remote_addr} | {request.url} | {request.user_agent.platform} | {response.status_code} | {diff}")
     return response
 
 
