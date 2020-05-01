@@ -109,6 +109,15 @@ def index():
     session['username'] = username
     session.permanent = True # means the cookie persists after the client has disconnected for 31 days
 
+    # ahhh
+    if username.strip == "":
+        # return the index page with an error message
+        return render_template(
+            'index.html',
+            error = "plz enter a username",
+            mobile = mobile
+        )
+
     # if they haven't entered a username, displayer the landing page
     if username == None:
         return render_template(
