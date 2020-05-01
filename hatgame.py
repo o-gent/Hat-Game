@@ -24,7 +24,7 @@ class HatGame:
     def __init__(self, number_of_players=10):
         
         """ public """
-        self.id = str(uuid.uuid4()) # id of party
+        self.id = str(uuid.uuid4())[:8] # id of party
 
         self.creation_time = datetime.datetime.now()  
 
