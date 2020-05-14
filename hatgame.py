@@ -29,7 +29,7 @@ class HatGame:
         self.creation_time = datetime.datetime.now()  
 
         """ private """
-        self.__name_limit = int(25/number_of_players) # number of names a user can enter
+        self.__name_limit = int(20/number_of_players) # number of names a user can enter
 
         self.__user_limit = number_of_players # maximum number of players allowed
 
