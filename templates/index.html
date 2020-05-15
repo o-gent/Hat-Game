@@ -11,6 +11,27 @@
 
         h1.main_title{
             font-size: 3em;
+            color: white;
+        }
+
+        @keyframes backgroundScroll {
+            0% { background-position: 50% 50%; }
+            33% { background-position: 50% 1%; }
+            40% { background-position: 50% 1%; }
+            66% { background-position: 50% 80%; }
+            75% { background-position: 50% 80%; }
+            100% { background-position: 50% 50%; }
+        }
+        /* added pauses to each edge of the image */
+
+        div.main_title {
+            background-image: url('static/hat.gif');
+            background-size: cover;
+            background-repeat: no-repeat;
+            margin: auto;
+            width: 50%;
+            background-position: 50% 50%;
+            animation: backgroundScroll 10s ease-in-out 1s infinite; 
         }
 
         div.error{
@@ -75,9 +96,12 @@
     </head>
 
     <body>
-        <h1 class="main_title">
-            The Hat Game 🎩
-        </h1>
+
+        <div class="main_title">
+            <h1 class="main_title">
+                The Hat Game 🎩
+            </h1>
+        </div>
 
         {% if error %}
             <div class="error">
@@ -113,7 +137,7 @@
             </form>
         </div>
 
-        
+
         <div class="create">
             <h2>
                 Create a game
