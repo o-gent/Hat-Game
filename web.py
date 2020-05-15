@@ -14,16 +14,26 @@ app = Flask(__name__)
 app.secret_key = b'not a secret'
 
 
-# SETUP logging 
-logging.basicConfig(
-	format='%(asctime)s - %(levelname)s - %(message)s',
-	datefmt='%H:%M:%S',
-	level = logging.INFO,   
-	handlers=[
-		logging.FileHandler(f"logs/{time.strftime('%Y%m%d-%H%M%S')}.log"),
-		logging.StreamHandler()
-	]
-)
+
+def setup_logger(name, log_file, level=logging.INFO):
+    """To setup as many loggers as you want"""
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+    handler = logging.FileHandler(log_file)      
+    stream = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    stream.setFormatter(formatter)
+
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+
+    logger.addHandler(handler)
+    logger.addHandler(stream)
+
+    return logger
+
+
+logger = setup_logger(f"{time.strftime('%Y%m%d-%H%M%S')}.log", f"logs/{time.strftime('%Y%m%d-%H%M%S')}.log")
 
 
 # we store hatgame instances here
@@ -55,7 +65,7 @@ def after_request(response):
     diff = time.time() - g.start
 
     # log usage data
-    logging.info(f"{request.remote_addr} | {request.url} | {request.user_agent.platform} | {response.status_code} | {diff}")
+    logger.info(f"{request.remote_addr} | {request.url} | {request.user_agent.platform} | {response.status_code} | {diff}")
     return response
 
 
@@ -233,13 +243,23 @@ def lobby(hatgame):
 
     username = session['username']
     ready = request.args.get('readyCheck')
+    mode = request.args.get('mode')
+    error = ""
 
     if ready == "✔":
         message = hatgame.set_user_ready(username) # update that users status
+        message = hatgame.change_state_to_input()
+        hatgame.set_mode(hatgame.get_mode()) # updates the number of items each player can have
+
+    # only allow the leader to change the number of items for the game
+    if username == list(hatgame.get_user_info().keys())[0]:
+        if mode:
+            error = hatgame.set_mode(mode)
+            return redirect(request.base_url)
+    else:
+        error = "You can't change the mode, beg the lobby leader to change it!"
 
     all_users = hatgame.all_users()
-    
-    message = hatgame.change_state_to_input()
     
     # display lobby with users
     return render_template(
@@ -248,7 +268,10 @@ def lobby(hatgame):
         all_users = all_users,
         room_id = hatgame.id,
         ready = '',
-        mobile = mobile
+        mobile = mobile,
+        mode = hatgame.get_mode(),
+        modes = hatgame.get_modes(),
+        error = error
     )
 
 
@@ -269,7 +292,9 @@ def input_stage(hatgame):
             'input.html', 
             user = username,
             ready = ready,
-            mobile = mobile
+            mobile = mobile,
+            user_finished = hatgame.user_finished(username),
+            items_left = hatgame.user_input_left(username),
         )
     
     else:

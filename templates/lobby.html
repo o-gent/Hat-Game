@@ -14,6 +14,10 @@
             margin: 0px auto;
             padding: 2em;
         }
+
+        div.mode_changer{
+            padding: 1em;
+        }
     </style>
 
 
@@ -47,6 +51,10 @@
         <h2>
             Your game code is {{ room_id }}
         </h2>
+
+        <h3>
+            The game mode is {{ mode }}
+        </h3>
 
         <p class="js-emaillink" style="color: white;font-size: 0.1em;">
             {{ url_for('index', link_id=room_id, _external=True) }}
@@ -95,6 +103,46 @@
                 You're the only one in the lobby, invite some people! (4-10 people recommended) Make sure you're all on a video call
             </p>
         {% endif %}
+
+        
+        <div class="mode_changer">
+            <h3>
+                Change the game length!
+            </h3>
+
+            <p>
+                'Normal' takes about an hour and a half. I have no idea how long the others take.
+            </p>
+
+            <form method="get">
+                <input type="hidden" name="mode" value="fast as f*ck">
+                <button>Fast as f*ck</button>
+            </form>
+
+            <form method="get">
+                <input type="hidden" name="mode" value="short">
+                <button>short</button>
+            </form>
+
+            <form method="get">
+                <input type="hidden" name="mode" value="medium">
+                <button>medium</button>
+            </form>
+
+            <form method="get">
+                <input type="hidden" name="mode" value="normal">
+                <button>normal</button>
+            </form>
+
+            <form method="get">
+                <input type="hidden" name="mode" value="marathon">
+                <button>marathon</button>
+            </form>
+
+            <h4>
+                {{ error }}
+            </h4>
+        </div>
         
     </body>
 

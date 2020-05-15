@@ -2,6 +2,8 @@ import random
 from typing import List, Tuple, Dict, Callable
 import uuid
 import datetime
+import time
+import logging
 
 
 def most_common(lst):
@@ -9,6 +11,25 @@ def most_common(lst):
     https://stackoverflow.com/questions/1518522/find-the-most-common-element-in-a-list
     """
     return max(set(lst), key=lst.count)
+
+
+
+def setup_logger(name, log_file, level=logging.INFO):
+    """To setup as many loggers as you want"""
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+    handler = logging.FileHandler(log_file)      
+    stream = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    stream.setFormatter(formatter)
+
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+
+    logger.addHandler(handler)
+    logger.addHandler(stream)
+
+    return logger
 
 
 class HatGame:
@@ -26,10 +47,15 @@ class HatGame:
         """ public """
         self.id = str(uuid.uuid4())[:8] # id of party
 
-        self.creation_time = datetime.datetime.now()  
+        # set up logger
+        self.logger = setup_logger(self.id, f"logs/games/{self.id}")
+
+        self.creation_time = datetime.datetime.now()
+
+        self.logger.info(f"created at {self.creation_time}")
 
         """ private """
-        self.__name_limit = int(20/number_of_players) # number of names a user can enter
+        self.__name_limit = 1 # number of names a user can enter
 
         self.__user_limit = number_of_players # maximum number of players allowed
 
@@ -49,6 +75,16 @@ class HatGame:
 
         self.__previous_users_list = []
 
+        self.__mode = 'normal'
+
+        self.__modes = {
+            'fast as f*ck': 10,
+            'short': 15,
+            'medium': 20,
+            'normal': 25,
+            'marathon': 35
+        }
+
 
     # TODO: we get errors here even though it's valid code
     def attempt(func: Callable) -> Callable: # type: ignore
@@ -67,6 +103,28 @@ class HatGame:
             except Exception as e:
                 return e.args[0]
         return inner
+
+
+    def get_modes(self):
+        return self.__modes
+
+
+    def get_mode(self):
+        return self.__mode
+
+
+    @attempt
+    def set_mode(self, mode: str):
+        """
+        Change the game length
+        """
+        change = self.__modes.get(mode)
+        if change == None:
+            raise Exception("That's not a mode you fuck")
+        self.__mode = mode
+        # set the number of items
+        self.__set_number_of_items(self.__modes[self.__mode])
+        self.logger.info(f"set mode to {mode}")
 
 
     def get_state(self) -> str:
@@ -138,6 +196,7 @@ class HatGame:
 
     def winner(self):
         scores = self.scores()
+        self.logger.info(f"scores: {scores}")
         return max(scores, key=scores.get)
 
 
@@ -149,6 +208,7 @@ class HatGame:
         for user in self.__user_info.keys():
             chosen = self.__user_info[user]['chosen']
             result[user] = most_common(chosen)
+        self.logger.info(f"bias: {result}")
         return result
 
 
@@ -238,6 +298,7 @@ class HatGame:
                 'round_winner_page': 0,
                 'round_change': '1'
             }
+            self.logger.info(f"{username} joined the game")
 
     
     @attempt
@@ -257,6 +318,8 @@ class HatGame:
         # set the user to ready
         self.__user_info[username]['lobby_ready'] = "✔"
 
+        self.logger.info(f"{username} is now ready")
+
     
     @attempt
     def change_state_to_input(self) -> None:
@@ -275,11 +338,12 @@ class HatGame:
 
         if ready_states == expected:
             self.__state = "input"
-            self.__name_limit = int(25/len(expected)) # number of names a user can enter
-            if self.__name_limit > 6:  # NAME LIMIT SHOULD BE 6 BUT 2 FOR TESTING
-                self.__name_limit = 6
+            # self.__name_limit = int(25/len(expected)) # number of names a user can enter
+            # if self.__name_limit > 6:  # NAME LIMIT SHOULD BE 6 BUT 2 FOR TESTING
+            #     self.__name_limit = 6
             
             self.__previous_users_list = list(self.__user_info.keys())
+            self.logger.info(f"changed state to input")
             
         else:
             raise Exception("Not everyone is ready!")
@@ -308,6 +372,7 @@ class HatGame:
             self.__user_info[username]['submitted'].append(item)
             # add item to hat
             self.__hat.append(item)
+            self.logger.info(f"{username} added {item} to the hat")
         else:
             raise Exception("Too many items added")
 
@@ -331,6 +396,7 @@ class HatGame:
             # move all items from temp hat to permanent
             self.__permanent_hat = tuple(item for item in self.__hat)
             self.__users_to_go = list(self.__user_info.keys())
+            self.logger.info(f"game state changed to round")
         else:
             raise Exception("Not everyone is ready!")
 
@@ -366,6 +432,7 @@ class HatGame:
         try:
             item = self.__hat.pop(random.randint(0,len(self.__hat)-1))
             self.__current_item = item
+            self.logger.info(f"{user} got the item {item}")
         except:
             raise Exception("Item picking didn't work")
 
@@ -390,6 +457,8 @@ class HatGame:
         # add item to picked_username won
         self.__user_info[picked_username]['won'].append(self.current_item())
 
+        self.logger.info(f"{username} picked {picked_username}")
+
 
     @attempt
     def change_round(self):
@@ -409,12 +478,15 @@ class HatGame:
             if state == "1":
                 self.end_round()
                 self.__state = "2"
+                self.logger.info(f"round change to {self.__state}")
             elif state == "2":
                 self.end_round()
                 self.__state = "3"
+                self.logger.info(f"round change to {self.__state}")
             elif state == "3":
                 self.end_round()
                 self.__state = "end"
+                self.logger.info(f"round change to {self.__state}")
             else:
                 pass
         else:
@@ -447,6 +519,14 @@ class HatGame:
             pass
         else:
             raise Exception(f"Not in the {state_required} state")
+    
+    
+    def __set_number_of_items(self, number_of_items: int):
+        """
+        Sets the limit of items, which must eb less than or equal to 6
+        """
+        limit = int(number_of_items/len(self.__user_info.keys()))
+        self.__name_limit = limit if limit <= 6 else 6
 
 
 if __name__ == "__main__":
