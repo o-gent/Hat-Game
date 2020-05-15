@@ -2,7 +2,7 @@
     {% if user_finished %}
         <script src="/static/reload.js"></script>
     {% endif %}
-
+    <script src="/static/hat.js"></script>
     <style>
         html{
             margin: auto;
@@ -15,6 +15,31 @@
 
         div.form{
             padding: 1em;
+        }
+
+        @keyframes myAnimation{
+        0%{
+            opacity: 0;
+        }
+        20%{
+            opacity: 1;
+        }
+        90%{
+            opacity: 1;
+        }
+        100%{
+            display: none;
+            opacity: 0;
+            /* transform: rotateX(90deg); */
+        }
+
+
+        }
+
+        #giphyme{
+            animation-name: myAnimation;
+            animation-duration: 8000ms;
+            animation-fill-mode: forwards;
         }
     </style>
 
@@ -69,6 +94,9 @@
                 {{ ready }}
             </p>
         {% endif %}
+
+
+        <span id="giphyme"></span>
 
     </body>
 </html>
